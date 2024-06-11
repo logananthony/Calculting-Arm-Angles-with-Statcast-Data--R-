@@ -3,10 +3,10 @@
 # Calculating Arm Angles Using Statcast Data
 
 ## Introduction
-This project is from an [old](https://github.com/logananthony/arm-angles-statcast/blob/main/Calculating%20Arm%20Angles%20Using%20Statcast%20Data%20%7C%20Rundown%20Baseball.pdf) article of mine but I found the moitivation to ressurect it from a thread on Twitter/X where Trevor Thrash shared his own arm angle calculations in [python](https://github.com/trevorwthrash/armAngles) - check it out. Anyway, this project aims to calculate the arm angles of pitchers using Statcast data in R. The motivation for this project originated from the 2020 ALCS, where the diversity in release points of the Rays pitching staff was highlighted in a [graph](https://github.com/logananthony/arm-angles-statcast/blob/main/2020%20Rays%20Graph.jpg) during one of the games. Although release points are crucial for understanding pitcher performance, they do not provide a complete picture. Hopefully this method aims to add another piece to the puzzle, enhancing our broader understanding of pitcher performance.
+This project is from an [old](https://github.com/logananthony/arm-angles-statcast/blob/main/Calculating%20Arm%20Angles%20Using%20Statcast%20Data%20%7C%20Rundown%20Baseball.pdf) article of mine but I found the moitivation to ressurect it from a thread on Twitter/X where Trevor Thrash shared his own arm angle calculations in [python](https://github.com/trevorwthrash/armAngles) - check it out. Anyway, this project aims to calculate the arm angles of pitchers using Statcast/Lahman data in R. The motivation for this project originated from the 2020 ALCS, where the diversity in release points of the Rays pitching staff was highlighted in a [graph](https://github.com/logananthony/arm-angles-statcast/blob/main/2020%20Rays%20Graph.jpg) during one of the games. Although release points are crucial for understanding pitcher performance, they do not provide a complete picture. Hopefully this method aims to add another piece to the puzzle, enhancing our broader understanding of pitcher performance.
 
 ## Calculation Method
-The calculation of arm angles involves forming triangles using the release position metrics provided by Statcast. The key steps include:
+The calculation of arm angles involves forming triangles using the release position metrics provided by Statcast and height data from Lahman. The key steps include:
 1. **Defining the Axes**: The Y-axis works vertically from home plate to center field, and the X-axis measures horizontal distance east to west. The Z-axis measures height.
 2. **Forming Triangles**: Using the average release positions, a triangle is formed where the hypotenuse represents the pitcher's arm.
 3. **Calculating Angles**: By using trigonometric equations, the arm angle (θ) is calculated in radians and then converted to degrees.
@@ -23,7 +23,7 @@ To get started with this project, follow these steps (I should also note I didn'
 
 2. **Install Dependencies**:
     ```r
-    install.packages(c("tidyverse", "ggplot2"))
+    install.packages(c("tidyverse", "ggplot2", "Lahman"))
     ```
 
 3. **Run the Calculations**:
