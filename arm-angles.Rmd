@@ -1,0 +1,94 @@
+---
+title: "Calculating Arm Angles Using Statcast Data"
+author: "Logan Mottley"
+date: "7/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(REdaS)
+options(digits= 3)
+
+data.raw.2015 <- read.csv("~/Desktop/Baseball/R/arm-angle-proj/Statcast Pitcher (2015).csv")
+data.raw.2016 <- read.csv("~/Desktop/Baseball/R/arm-angle-proj/Statcast Pitcher (2016).csv")
+data.raw.2017 <- read.csv("~/Desktop/Baseball/R/arm-angle-proj/Statcast Pitcher (2017).csv")
+data.raw.2018 <- read.csv("~/Desktop/Baseball/R/arm-angle-proj/Statcast Pitcher (2018).csv")
+data.raw.2019 <- read.csv("~/Desktop/Baseball/R/arm-angle-proj/Statcast Pitcher (2019).csv")
+data.raw.2020 <- read.csv("~/Desktop/Baseball/R/arm-angle-proj/Statcast Pitcher (2020).csv") 
+data.raw.all <- rbind(data.raw.2015, data.raw.2016, data.raw.2017, data.raw.2018, 
+                data.raw.2019, data.raw.2020)
+
+# releaseposition data
+data <- data.raw.all %>%
+  group_by(player_name) %>%
+  filter(n() >= 500) %>%
+  ungroup() %>%
+  group_by(player_name, game_year, pitch_name) %>%
+  drop_na(release_pos_z, release_pos_x, release_extension, 
+          release_speed, release_spin_rate) %>%
+  mutate(avg_release_pos_z = mean(release_pos_z), 
+         avg_release_pos_x = mean(release_pos_x), 
+         avg_release_ext = mean(release_extension)) %>%
+  group_by(player_name, pitch_name, game_year) %>%
+  mutate(avg_pitch_velo = mean(release_speed), 
+         avg_release_spin = mean(release_spin_rate)) %>%
+  dplyr::select(player_name, avg_release_pos_z, avg_release_pos_x,
+                avg_release_ext, pitch_name, avg_pitch_velo, 
+                avg_release_spin) %>%
+  distinct(player_name, .keep_all = T) %>%
+  drop_na(pitch_name) %>%
+  filter(pitch_name != "null")
+
+# height data
+heights <- Lahman::Master %>%
+  mutate(player_name = paste(nameFirst, nameLast), 
+         height = height /12)   %>% # (height - 10)/12 ????
+  dplyr::select(player_name, height, weight, throws) %>%
+  distinct(player_name, .keep_all = T) %>%
+  mutate(player_name = ifelse(player_name == "Lance McCullers", "Lance McCullers Jr.", player_name))
+
+# final data 
+data <- left_join(data, heights, by = "player_name")
+
+```
+
+Calculating Arm Slot
+```{r}
+
+data <- data %>%
+  ungroup() %>%
+  group_by(player_name, game_year) %>%
+  mutate(adj = (avg_release_pos_z - height*0.7),
+         opp =  abs(avg_release_pos_x), # distance from middle of chest to arm
+         hyp = sqrt(opp^2 + adj^2), 
+         arm_angle = rad2deg(acos((adj^2 + hyp^2 - opp^2)/ (2*(adj*hyp)))),
+         arm_slot = case_when(arm_angle >= 90 ~ "Submarine",
+                              arm_angle >= 70 & arm_angle < 90 ~ "Side Arm", 
+                              arm_angle < 70 & arm_angle >= 30 ~ "Three-Quarters", 
+                              arm_angle < 30 ~ "Overhand")) %>%
+  drop_na(arm_angle) %>%
+  select(game_year, player_name, arm_angle, arm_slot, throws, 
+         pitch_name, avg_pitch_velo, avg_release_spin, height, 
+         avg_release_pos_z, avg_release_pos_x) %>%
+  mutate_if(is.numeric, round, digits = 2)
+
+write.csv(data, "arm_angle.csv")
+
+# arm angle plot
+data %>%
+  ggplot() + 
+  geom_point(aes(avg_release_pos_x, avg_release_pos_z, color = arm_slot), 
+             size = 3.3, alpha = 0.6) + 
+  labs(title = "Average Arm Slots (2015-2020)", 
+       x = "", y = "", color = "Arm Slot") + 
+  theme(text = element_text(family = "DIN Alternate Bold"),
+        plot.title = element_text(size = 20, hjust = 0.5), 
+        axis.text.x = element_blank(), 
+        axis.text.y = element_blank(), 
+        legend.text = element_text(size = 12)) + 
+  xlim(-5, 5)
+
+```
