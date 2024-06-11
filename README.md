@@ -3,10 +3,7 @@
 # Calculating Arm Angles Using Statcast Data
 
 ## Introduction
-This project aims to calculate the arm angles of pitchers using Statcast data. The motivation for this project originated from the 2020 ALCS, where the diversity in release points of the Rays pitching staff highlighted the importance of understanding arm angles. Arm angles offer a more interpretable version of release points, providing valuable insights for both mechanical and analytical purposes in baseball.
-
-## Motivation
-The primary motivation behind calculating arm angles is to enhance our understanding of pitchers' mechanics and their impact on performance. Arm angles can help answer various analytical questions such as:
+This [project](https://github.com/logananthony/arm-angles-statcast/blob/main/Calculating%20Arm%20Angles%20Using%20Statcast%20Data%20%7C%20Rundown%20Baseball.pdf) aims to calculate the arm angles of pitchers using Statcast data in R. The motivation for this project originated from the 2020 ALCS, where the diversity in release points of the Rays pitching staff highlighted the importance of understanding arm angles. Arm angles offer a more interpretable version of release points, providing valuable insights for both mechanical and analytical purposes in baseball.
 
 ## Research Questions
 The primary motivation behind calculating arm angles is to enhance our understanding of pitchers' mechanics and their impact on performance. Here are some key questions that this project seeks to address:
