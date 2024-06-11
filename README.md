@@ -1,3 +1,5 @@
+![Header Image](https://github.com/logananthony/arm-angles-statcast/blob/main/Arm%20Angles.png)
+
 # Calculating Arm Angles Using Statcast Data
 
 ## Introduction
